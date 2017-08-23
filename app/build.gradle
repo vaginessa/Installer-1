@@ -27,3 +27,36 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
 }
+
+task generateSources << {
+    println '=============generateSources============='
+    def process = "python moveAPK.py".execute()
+    // Wait till the process completes before continuing
+    int exitValue = process.waitFor()
+    println "Process exited with value $exitValue"
+}
+
+/*assembleDebug.doLast {
+    def process = "python moveAPK.py".execute()
+    // Wait till the process completes before continuing
+    int exitValue = process.waitFor()
+    println "Process exited with value $exitValue"
+}*/
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'assembleDebug') {
+
+        //task.dependsOn 'checkstyle', 'findbugs', 'pmd', 'lint'
+        println '=============assembleDebug============='
+        task.doLast{
+            println '=============generateSources============='
+            def process = "python moveAPK.py".execute()
+            // Wait till the process completes before continuing
+            int exitValue = process.waitFor()
+            println "Process exited with value $exitValue"
+        }
+    } else if (task.name == 'assembleRelease') {
+        //task.dependsOn 'checkstyle', 'findbugs', 'pmd', 'lint'
+        println '=============assembleRelease============='
+    }
+}
